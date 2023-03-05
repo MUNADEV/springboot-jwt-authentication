@@ -1,16 +1,18 @@
 package com.example.springbootjwtauthentication.model.auth;
 
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "users_roles")
 public class UserRoleModel{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -21,10 +23,10 @@ public class UserRoleModel{
     private RoleModel role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Timestamp updatedAt;
 
     // getters and setters omitted for brevity
 }

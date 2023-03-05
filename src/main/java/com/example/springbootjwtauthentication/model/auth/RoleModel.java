@@ -1,12 +1,14 @@
 package com.example.springbootjwtauthentication.model.auth;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
 @Entity
 @Table(name = "roles")
 public class RoleModel implements Serializable {
@@ -15,19 +17,21 @@ public class RoleModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
-    @Column(unique = true)
+    @Column(name="name",unique = true)
     private String name;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Timestamp  updatedAt;
 
     @ManyToMany(mappedBy = "roles")
     private Set<UserModel> users = new HashSet<>();
 
     // constructors, getters and setters
+
+
 }

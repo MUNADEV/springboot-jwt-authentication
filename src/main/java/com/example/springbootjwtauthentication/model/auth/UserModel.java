@@ -1,14 +1,17 @@
 package com.example.springbootjwtauthentication.model.auth;
 
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
-import java.time.LocalDateTime;
 import java.io.Serializable;
 import java.util.Set;
 
+@Data
 @Entity
 @Table(name = "users")
 public class UserModel implements Serializable {
@@ -17,26 +20,26 @@ public class UserModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name="username",nullable = false, unique = true)
     @NotBlank(message = "Username is required")
     private String username;
 
-    @Column(nullable = false)
+    @Column(name="password", nullable = false)
     @NotBlank(message = "Password is required")
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(name= "email", nullable = false, unique = true)
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email")
     private String email;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private Timestamp updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
@@ -44,6 +47,5 @@ public class UserModel implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleModel> roles = new HashSet<>();
 
-    // getters and setters
 
 }
