@@ -1,5 +1,6 @@
-package com.example.springbootjwtauthentication.model.auth;
+package com.example.springbootjwtauthentication.application.model.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,9 +13,6 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 public class RoleModel implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -22,16 +20,15 @@ public class RoleModel implements Serializable {
     @Column(name="name",unique = true)
     private String name;
 
+    @JsonIgnore
     @Column(name = "created_at")
     private Timestamp createdAt;
 
+    @JsonIgnore
     @Column(name = "updated_at")
     private Timestamp  updatedAt;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Set<UserModel> users = new HashSet<>();
-
-    // constructors, getters and setters
-
-
 }

@@ -1,5 +1,4 @@
-package com.example.springbootjwtauthentication.model.auth;
-
+package com.example.springbootjwtauthentication.application.model.auth;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -14,10 +13,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "users")
-public class UserModel implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

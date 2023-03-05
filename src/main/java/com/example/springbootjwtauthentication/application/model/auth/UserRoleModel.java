@@ -1,4 +1,4 @@
-package com.example.springbootjwtauthentication.model.auth;
+package com.example.springbootjwtauthentication.application.model.auth;
 
 
 import java.sql.Timestamp;
@@ -28,5 +28,4 @@ public class UserRoleModel{
     @Column(name = "updated_at", nullable = false)
     private Timestamp updatedAt;
 
-    // getters and setters omitted for brevity
 }
