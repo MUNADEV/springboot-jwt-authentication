@@ -20,6 +20,11 @@ public class AuthController {
 
     @GetMapping("/users")
     public List<UserModel> users() {
+        for(UserModel user: authService.getUsers())
+            //System.out.println(user.getRoles().toString());
+            System.out.println();
+
+
         return authService.getUsers();
     }
     @GetMapping("/index")

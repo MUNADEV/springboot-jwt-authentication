@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "roles")
-public class RoleModel implements Serializable {
+public class RoleModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -28,7 +28,6 @@ public class RoleModel implements Serializable {
     @Column(name = "updated_at")
     private Timestamp  updatedAt;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private Set<UserModel> users = new HashSet<>();
 }
