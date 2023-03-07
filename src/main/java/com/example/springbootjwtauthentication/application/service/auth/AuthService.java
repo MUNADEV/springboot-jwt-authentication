@@ -25,4 +25,5 @@ public class AuthService {
     public List<RoleModel> getRoles(){
         return roleRepository.findAll();
     }
+
 }

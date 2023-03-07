@@ -29,5 +29,6 @@ public class RoleModel {
     private Timestamp  updatedAt;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<UserModel> users = new HashSet<>();
 }

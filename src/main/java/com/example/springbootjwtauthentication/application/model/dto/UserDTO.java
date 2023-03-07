@@ -1,10 +1,15 @@
 package com.example.springbootjwtauthentication.application.model.dto;
 
+import com.example.springbootjwtauthentication.application.model.auth.RoleModel;
 import com.example.springbootjwtauthentication.application.model.enums.Roles;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.NumberFormat;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class UserDTO {
 
@@ -16,8 +21,12 @@ public class UserDTO {
     @NotNull
     @NotBlank
     private String username;
+
     @NotNull
-    private Roles rol;
+    @NotBlank
+    @Email
+    private String email;
+
     @NotNull
     @NotBlank
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -25,28 +34,27 @@ public class UserDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String token;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getUsername() {
         return username;
     }
+    private Set<RoleModel> roles = new HashSet<>();
 
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public Roles getRol() {
-        return rol;
+    public String getEmail() {
+        return email;
     }
 
-    public void setRol(Roles rol) {
-        this.rol = rol;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -63,5 +71,13 @@ public class UserDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Set<RoleModel> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<RoleModel> roles) {
+        this.roles = roles;
     }
 }

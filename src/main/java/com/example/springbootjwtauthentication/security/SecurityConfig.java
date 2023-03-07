@@ -44,8 +44,13 @@ public class SecurityConfig{
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("request");
         http.cors().and().csrf().disable().authorizeHttpRequests(authConfig -> {
-                    authConfig.requestMatchers("/auth/**").permitAll();
+                    authConfig.requestMatchers(
+                            "/api/auth/**",
+                            "api/auth/**",
+                            "api/auth/refresh"
+                            ).permitAll();
                     authConfig.anyRequest().authenticated();
                 }).exceptionHandling().authenticationEntryPoint(customAuthenticationError).accessDeniedHandler(customAccessDenied).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
