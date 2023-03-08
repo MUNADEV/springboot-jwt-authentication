@@ -1,17 +1,14 @@
 package com.example.springbootjwtauthentication.application.model.auth;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
 import java.util.*;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "users")
@@ -65,6 +62,10 @@ public class UserModel implements UserDetails {
         return this.email;
     }
 
+    public String _getUsername(){
+        return this.username;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -93,7 +94,7 @@ public class UserModel implements UserDetails {
         this.id = id;
     }
 
-    public void setUsrname(String username) {
+    public void _setUsername(String username) {
         this.username = username;
     }
 

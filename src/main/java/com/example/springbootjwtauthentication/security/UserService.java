@@ -18,10 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -40,10 +37,16 @@ public class UserService {
     @Autowired
     private JwtProvider jwtProvider;
 
+    /**
+     * Creates a new user based on the given userDTO
+     * @param userDTO the userDTO object containing the user's information
+     * @return the created UserModel object
+     * @throws Exception if a role specified in userDTO is not found in the database
+     */
     public UserModel create(UserDTO userDTO) throws Exception  {
 
         UserModel user = new UserModel();
-        user.setUsrname(userDTO.getUsername());
+        user._setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         //Set<RoleModel> roles = new HashSet<>();
@@ -57,13 +60,23 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Authenticates a user based on the provided loginDTO and generates a JWT token for the authenticated user
+     * @param loginDTO the loginDTO object containing the user's email and password
+     * @return the UserDTO object for the authenticated user, containing user information and JWT token
+     */
     public UserDTO login(LoginDTO loginDTO) {
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getClave()));
+                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
         System.out.println(auth.toString());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         UserModel user = userRepository.findByEmail(loginDTO.getEmail()).orElse(null);
+
+        if(user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
         List<String> roles = user.getRoles()
                 .stream()
                 .map(RoleModel::getName)
@@ -74,7 +87,7 @@ public class UserService {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setEmail(user.getEmail());
-        userDTO.setUsername(user.getUsername());
+        userDTO.setUsername(user._getUsername());
         userDTO.setPassword(user.getPassword());
         userDTO.setRoles(user.getRoles());
         userDTO.setToken(token);

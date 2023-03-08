@@ -31,7 +31,6 @@ public class UserDetail implements UserDetailsService {
         if (!usuario.isEnabled()) {
             throw new DisabledException("The account is disabled");
         }
-
         if (!usuario.isCredentialsNonExpired()) {
             throw new CredentialsExpiredException("The credentials have expired");
         }

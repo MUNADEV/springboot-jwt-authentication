@@ -1,50 +1,64 @@
 package com.example.springbootjwtauthentication.security.jwt;
 
-
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
+import com.example.springbootjwtauthentication.application.model.dto.JwtDTO;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.text.ParseException;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtProvider {
-
-    private final String secretKey="mySecretKeyExample123IsAExampleKEYWithManyCharacterssssss";
-
-    private Clock clock;
     private final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
-    private final Key SECRET_KEY = new SecretKeySpec
-            (secretKey.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS512.getJcaName());
-    private final long EXPIRATION_TIME = 700000; //15 minutes
 
+     /**
+     * The secret key used to sign the JWT token.
+     */
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    /**
+     * The expiration time in milliseconds for the JWT token.
+     */
+    @Value("${jwt.expiration}")
+    private int expiration;
+
+    /**
+     * Generates a JWT token for the given email and roles.
+     *
+     * @param email the email of the user for whom the token is being generated.
+     * @param roles the roles of the user for whom the token is being generated.
+     * @return a string representing the generated JWT token.
+     */
     public String generateToken(String email, List<String> roles) {
 
         return Jwts.builder()
                 .setSubject(email)
                 .claim("roles", roles)
-                .setExpiration(Date.from(Instant.now().plusMillis(EXPIRATION_TIME)))
-                .signWith(SECRET_KEY)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(Date.from(Instant.now().plusMillis(expiration)))
+                .signWith(getSignInKey(),SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    /**
+     * Validates the given JWT token.
+     *
+     * @param token the JWT token to validate.
+     * @return true if the token is valid, false otherwise.
+     */
     public boolean validateToken(String token){
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
             return true;
         }catch (MalformedJwtException e){
             logger.error("The token is malformed");
@@ -60,68 +74,65 @@ public class JwtProvider {
         return false;
     }
 
+    /**
+     * Extracts the email from the given JWT token.
+     *
+     * @param token the JWT token from which to extract the email.
+     * @return the email extracted from the token.
+     */
     public String getEmailFromToken(String token) {
-        JwtParser parser = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build();
+        JwtParser parser = Jwts.parserBuilder().setSigningKey(getSignInKey()).build();
         return parser.parseClaimsJws(token).getBody().getSubject();
     }
-/*
-    public static String refreshToken(String token) {
-        final Date createdDate = new Date();
-        final Date expirationDate = calculateExpirationDate(createdDate);
-        final Claims claims = getAllClaimsFromToken(token);
-        claims.setIssuedAt(createdDate);
-        claims.setExpiration(expirationDate);
+
+    /**
+     * Extracts all claims from the given JWT token.
+     *
+     * @param token the JWT token from which to extract the claims.
+     * @return the claims extracted from the token.
+     */
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
+     * Generates a new JWT token with refreshed expiration time.
+     *
+     * @param jwtDto the JWT token from which to extract the claims.
+     * @return a string representing the new JWT token with refreshed expiration time if actual expiration time is correct.
+     */
+    public String refreshToken(JwtDTO jwtDto) {
+        Claims claims;
+
+        try{
+            claims = extractAllClaims(jwtDto.getToken());
+        }catch (ExpiredJwtException e) {
+            logger.error("Expired token");
+            return null;
+        }
+        Date now = new Date();
+        Date expirationTime = new Date(now.getTime() + expiration);
+
         return Jwts.builder()
                 .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .setIssuedAt(now)
+                .setExpiration(expirationTime)
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    private static  Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    /**
+     * This method generates a secret key to sign and verify JWT tokens.
+     * The key is generated by decoding the secret key provided in the application properties.
+     * @return A Key object containing the secret key.
+     */
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
-
-    private static Date calculateExpirationDate(Date createdDate) {
-        return new Date(createdDate.getTime() + EXPIRATION_TIME);
-    }
-
-    public static boolean canTokenBeRefreshed(String token) {
-        final Date expiration = getExpirationDate(token);
-        System.out.println("Expiration: " + expiration);
-        System.out.println("Date: " + new Date());
-        return expiration.after(new Date());
-    }
-
-    public static Date getExpirationDate(String token) {
-        final Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-        System.out.println("Expiration en getExpirationDate: " + claims.getExpiration());
-        return claims.getExpiration();
-    }
-    public static String getTokenFromRequest(String request) {
-
-        String bearerToken = request;
-        if (StringUtils.hasText(bearerToken)) {
-            return bearerToken;
-        }
-        return null;
-    }
-*/
-
-    public Claims getFormatToken(String jwtString) {
-        return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(jwtString).getBody();
-    }
-
-    //A refresh token method
-    public String refreshToken(String jwtString) throws ParseException {
-            System.out.println(jwtString);
-            Claims claims = getFormatToken(jwtString);
-            return Jwts.builder()
-                    .setClaims(claims)
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date(new Date().getTime() + EXPIRATION_TIME))
-                    .signWith(SECRET_KEY)
-                    .compact();
-    }
-
-
 }

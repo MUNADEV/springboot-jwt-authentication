@@ -1,7 +1,6 @@
 package com.example.springbootjwtauthentication.application.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -19,7 +18,7 @@ public class LoginDTO {
         return this.email;
     }
 
-    public String getClave() {
+    public String getPassword() {
         return this.password;
     }
 }
