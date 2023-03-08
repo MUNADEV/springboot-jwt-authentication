@@ -40,10 +40,11 @@ public class RequestFilterJWT  extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String token = getToken(request);
-            if (token!= null && jwtProvider.validateToken(token)) {
-                String email = jwtProvider.getEmailFromToken(token);
-                if (email != null) {
-                    UserDetails userDetails = userDetail.loadUserByUsername(email);
+            String email = jwtProvider.getEmailFromToken(token);
+
+            if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                UserDetails userDetails = userDetail.loadUserByUsername(email);
+                if (token != null && jwtProvider.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(

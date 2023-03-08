@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class AuthController {
     JwtProvider jwtProvider;
 
     @GetMapping("/users")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public List<UserModel> users() {
         for(UserModel user: authService.getUsers())
             //System.out.println(user.getRoles().toString());

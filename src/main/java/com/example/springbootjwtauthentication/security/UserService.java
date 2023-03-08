@@ -10,12 +10,14 @@ import com.example.springbootjwtauthentication.application.repository.auth.RoleR
 import com.example.springbootjwtauthentication.application.repository.auth.UserRepository;
 import com.example.springbootjwtauthentication.security.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -94,4 +96,5 @@ public class UserService {
 
         return userDTO;
     }
+
 }
