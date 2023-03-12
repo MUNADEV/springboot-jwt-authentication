@@ -1,5 +1,6 @@
 package com.example.springbootjwtauthentication.exceptions.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,8 +19,18 @@ public class CustomAuthenticationError implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
+
         LOGGER.warning("Authentication error: " + authException.getMessage());
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getWriter().write("Access denied. Authenticate with valid credentials.");
+
+        if(authException.getCause() instanceof ExpiredJwtException){
+            //response.sendRedirect("/api/auth/login");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Access denied.Token expired.");
+        }else{
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Access denied.No habilitated request.");
+
+        }
+
     }
 }

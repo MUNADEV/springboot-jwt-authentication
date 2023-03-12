@@ -36,14 +36,22 @@ public class AuthController {
     @Autowired
     JwtProvider jwtProvider;
 
-    @GetMapping("/users")
-    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
-    public List<UserModel> users() {
-        for(UserModel user: authService.getUsers())
-            //System.out.println(user.getRoles().toString());
-            System.out.println();
+    @GetMapping("/admin-route")
+    @PreAuthorize("hasAuthority('administrator')")
+    public ResponseEntity<String> admin_route() {
+        return new ResponseEntity<String>("Admin-route as a Administrator authority", HttpStatus.OK);
+    }
 
-        return authService.getUsers();
+    @GetMapping("/customer-route")
+    @PreAuthorize("hasAuthority('customer')")
+    public ResponseEntity<String> customer_route() {
+        return new ResponseEntity<String>("Customer-route as a Customer authority", HttpStatus.OK);
+    }
+
+    @GetMapping("/employee-route")
+    @PreAuthorize("hasAuthority('employee')")
+    public ResponseEntity<String> employee_route() {
+        return new ResponseEntity<String>("Employee-route as a Employee authority", HttpStatus.OK);
     }
 
     /**
