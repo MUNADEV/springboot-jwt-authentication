@@ -40,17 +40,19 @@ public class RequestFilterJWT  extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String token = getToken(request);
-            String email = jwtProvider.getEmailFromToken(token);
+            if (token != null && !token.isEmpty()) {
+                String email = jwtProvider.getEmailFromToken(token);
 
-            if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                UserDetails userDetails = userDetail.loadUserByUsername(email);
-                if (token != null && jwtProvider.isTokenValid(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userDetail.loadUserByUsername(email);
+                    if (jwtProvider.isTokenValid(token, userDetails)) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(
+                                new WebAuthenticationDetailsSource().buildDetails(request)
+                        );
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             }
         } catch (Exception e) {
