@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -48,14 +50,22 @@ public class UserService {
     public UserModel create(UserDTO userDTO) throws Exception  {
 
         UserModel user = new UserModel();
+
         user._setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        //Set<RoleModel> roles = new HashSet<>();
-        RoleModel role1 = roleRepository.findByName(Roles.user.name()).orElseThrow(()-> new Exception("Role not found in database"));
-        RoleModel role2 = roleRepository.findByName(Roles.customer.name()).orElseThrow(()-> new Exception("Role not found in database"));
-        user.getRoles().add(role1);
-        user.getRoles().add(role2);
+
+        //TODO check in new method
+        Set<String> roles = userDTO.getRolesEnum();
+
+        if (roles == null || roles.size() < 2) {
+            throw new Exception("User must have at least 2 roles");
+        }
+        for (String role: roles) {
+            if(Arrays.asList("user", "customer", "employee", "administrator").contains(role.toLowerCase())) {
+                user.getRoles().add(roleRepository.findByName(role).orElseThrow(()-> new Exception("Error to get role")));
+            }
+        }
         user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         user.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         user = userRepository.save(user);

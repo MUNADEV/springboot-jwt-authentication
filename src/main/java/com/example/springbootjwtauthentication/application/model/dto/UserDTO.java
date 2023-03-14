@@ -37,8 +37,15 @@ public class UserDTO {
     public String getUsername() {
         return username;
     }
+    private Set<String> rolesEnum = new HashSet<>();
     private Set<RoleModel> roles = new HashSet<>();
 
+    public Set<String> getRolesEnum() {
+        return rolesEnum;
+    }
+    public void setRolesEnum(Set<String> rolesEnum) {
+        this.rolesEnum = rolesEnum;
+    }
     public int getId() {
         return id;
     }
