@@ -6,9 +6,7 @@ import com.example.springbootjwtauthentication.application.model.dto.JwtDTO;
 import com.example.springbootjwtauthentication.application.model.dto.LoginDTO;
 import com.example.springbootjwtauthentication.application.model.dto.UserDTO;
 import com.example.springbootjwtauthentication.application.service.auth.AuthService;
-import com.example.springbootjwtauthentication.security.UserService;
 import com.example.springbootjwtauthentication.security.jwt.JwtProvider;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +29,7 @@ public class AuthController {
     AuthService authService;
 
     @Autowired
-    private UserService userService;
+    private AuthService userService;
 
     @Autowired
     JwtProvider jwtProvider;
