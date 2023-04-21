@@ -12,13 +12,19 @@ The application is divided into three layers: controller, service and repository
 src
 |-- main
 |   |-- java
-|   |   |-- com.example.myapp
-|   |   |   |-- controller       // Controladores RESTful
-|   |   |   |-- model            // Modelos de datos
-|   |   |   |-- repository       // Repositorios de acceso a datos
-|   |   |   |-- service          // Capa de servicios
+|   |   |-- com.example.springbootjwtauthentication
+|   |   |   |-- application       # Application components
+|   |   |   |   |-- controller          # Controller layer
+|   |   |   |   |-- model               # Model layer
+|   |   |   |   |-- repository          # Repository layer
+|   |   |   |   |-- service             # Service layer
+|   |   |   |-- exception        # Exception components
+|   |   |   |   |-- jwt
+|   |   |   |-- security         # Security components
+|   |   |   |   |-- jwt
+|   |   |   |-- SpringBootJwtAuthenticationApplication.java          
 |   |   |-- resources
-|   |   |   |-- application.yml  // Archivo de configuración de Spring
+|   |   |   |-- application.properties  
 |-- test  
 ```
 
